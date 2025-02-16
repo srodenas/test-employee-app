@@ -43,4 +43,8 @@ class ResponseEmployee(
     @SerializedName("msg")
     @Expose
     var msg: String ?= null  //para la respuesta de la api personalizada.
-)
+) {
+    override fun toString(): String {
+        return "ResponseEmployee(name=$name, dni=$dni, password=$password, description=$description, salary=$salary, phone=$phone, urlImage=$urlImage, disponible=$disponible, token=$token, msg=$msg)"
+    }
+}

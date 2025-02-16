@@ -6,11 +6,11 @@ import com.google.gson.annotations.SerializedName
 class RequestEmployee(
      @SerializedName("dni")
      @Expose
-     var dni : String,
+     var dni : String? =null,
 
      @SerializedName("password")
      @Expose
-     var password : String,
+     var password : String ? =null,
 
      @SerializedName("name")
      @Expose
@@ -20,8 +20,8 @@ class RequestEmployee(
      @Expose
      var description : String? = null,
 
-     //@SerializedName("salary")
-   //  @Expose
+     @SerializedName("salary")
+     @Expose
      var salary : String? = null,
 
      @SerializedName("phone")

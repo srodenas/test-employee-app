@@ -47,4 +47,26 @@ class ApiService {
             return Result.failure(e)
         }
     }
+
+
+    suspend fun getAllEmployee (token: String): Result<List<ResponseEmployee>>{
+        try{
+            val t = "Bearer "+token
+            val response = InstanceRetrofit.retrofitService.getAll(t)
+            if (response.isSuccessful){
+                response.body()?.let{
+                    body -> return Result.success(body)
+                }?: return Result.failure(RuntimeException("body nulo"))
+
+            }else{
+                //Me puede mandar un error personalizado, pero la petición es correcta.
+                //ó que la API me haya mandado un mensaje de error por alguna excepción. Petición no correcta.
+                val errorMsg = response.errorBody()?.string() ?: "Error no reconocido al listar"   //error personalizado o Excepción
+                return Result.failure(RuntimeException(errorMsg))
+            }
+
+        }catch (e: Exception){
+            return Result.failure(e)
+        }
+    }
 }
