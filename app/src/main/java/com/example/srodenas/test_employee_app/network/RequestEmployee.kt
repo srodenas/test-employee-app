@@ -20,8 +20,8 @@ class RequestEmployee(
      @Expose
      var description : String? = null,
 
-     @SerializedName("salary")
-     @Expose
+     //@SerializedName("salary")
+   //  @Expose
      var salary : String? = null,
 
      @SerializedName("phone")

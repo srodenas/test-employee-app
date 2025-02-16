@@ -9,9 +9,12 @@ class ApiService {
              if (response.isSuccessful){
                  response.body()?.let{
                      body -> return Result.success(body)
-                 }?: return Result.failure(RuntimeException("Respuesta de usuario nulo"))
-             }else
-                 return Result.failure(RuntimeException ("Error en la llamada a la api"))
+                 }?: return Result.failure(RuntimeException("Respuesta de usuario nulo en el logueo"))
+             }else {
+                 //aquí ha habido una respuesta por la api, con algún 40x
+                 val errorMsg = response.errorBody()?.string() ?: "Error no reconocido al loguear"
+                 return Result.failure(RuntimeException(errorMsg))
+             }
          }catch (e : Exception) {
              return Result.failure(e)
          }
@@ -24,10 +27,22 @@ class ApiService {
             val response = InstanceRetrofit.retrofitService.register(user)
             if (response.isSuccessful){
                 response.body()?.let{
+                    //Si el body no es nulo, tengo datos con mi 20x.
+                    //Si el body es nulo, ha sido un 20x, pero no tengo respuesta de la api.
                         body -> return Result.success(body)
-                }?: return Result.failure(RuntimeException("Respuesta de usuario nulo"))
-            }else
-                return Result.failure(RuntimeException ("Error en la llamada a la api"))
+                }?: return Result.failure(RuntimeException("Respuesta de usuario nulo en el registro"))
+            }else{
+                //aquí ha habido una respuesta por la api, con algún 40x
+                /*
+                Cuando se produce un error 40x, por la api, Retrofit considerará la respuesta como
+                fallida y por tanto pueden pasar dos cosas:
+                1.- Que la api me haya mandado un mensaje de error personalizado, pero la petición es correcta.
+                2.- Que la api sólo me haya mandado un mensaje de error por alguna excepción. Petición no correcta.
+                 */
+                val errorMsg = response.errorBody()?.string() ?: "Error no reconocido al registrar"
+                return Result.failure(RuntimeException(errorMsg))
+            }
+
         }catch (e : Exception) {
             return Result.failure(e)
         }

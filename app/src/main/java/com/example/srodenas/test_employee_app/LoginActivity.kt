@@ -1,5 +1,6 @@
 package com.example.srodenas.test_employee_app
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -16,6 +17,7 @@ import retrofit2.Response
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var apiService : ApiService
+    private var token:String? =null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -56,7 +58,11 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             result = apiService.loginService(tLogin)
             result
-                .onSuccess { Toast.makeText(this@LoginActivity, "Usuario logueado con token: ${it.token}", Toast.LENGTH_LONG).show() }         //callBack (función de orden superior. Sólo si fue exitoso
+                .onSuccess {
+                    Toast.makeText(this@LoginActivity, "Usuario logueado con token: ${it.token}", Toast.LENGTH_LONG).show()
+                    registerTokenShared(it.token)
+                    token = it.token  //lo guardamos, para después utilizarlo en el activity.
+                }         //callBack (función de orden superior. Sólo si fue exitoso
                 .onFailure { //función de orden superior. Sólo si no fue existoso.
                     Toast.makeText(this@LoginActivity, it.message, Toast.LENGTH_LONG).show()
                 }
@@ -64,5 +70,18 @@ class LoginActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun registerTokenShared(token: String?) {
+        val shared = getSharedPreferences("MyPrefsApp", MODE_PRIVATE)
+        val edit = shared.edit()
+        edit.putString ("token", token)
+        edit.apply()
+    }
+
+    private fun loadTokenShared() : String? {
+        val shared = getSharedPreferences("MyPrefsApp", MODE_PRIVATE)
+        val token = shared.getString("token", null)
+        return token
     }
 }
